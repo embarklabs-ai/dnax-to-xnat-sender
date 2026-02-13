@@ -1,4 +1,4 @@
-# ADAPT XNAT Sender
+# ADAPT XNAT Sender v1.0
 
 DNAnexus applet that exports DICOM zip archives and non-DICOM, clinical files (SVS, CSV, PDF, JSON) from DNAnexus to XNAT.
 
