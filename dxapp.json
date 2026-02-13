@@ -1,0 +1,75 @@
+{
+  "name": "adapt-xnat-sender",
+  "title": "ADAPT XNAT Sender",
+  "version": "1.0",
+  "dxapi": "1.0",
+  "inputSpec": [
+    {
+      "name": "manifest",
+      "class": "file",
+      "patterns": [
+        "*.yaml",
+        "*.yml"
+      ]
+    },
+    {
+      "name": "secrets",
+      "class": "file",
+      "patterns": [
+        "*.yaml",
+        "*.yml"
+      ]
+    },
+    {
+      "name": "src_root_path",
+      "class": "string",
+      "help": "DNAnexus source project data path"
+    },
+    {
+      "name": "xnat_project",
+      "class": "string",
+      "optional": true,
+      "help": "Override XNAT project from manifest. If not set, uses manifest project keys."
+    },
+    {
+      "name": "report_filename",
+      "class": "string",
+      "optional": true,
+      "default": "export_report.csv"
+    }
+  ],
+  "outputSpec": [
+    {
+      "name": "export_report",
+      "class": "file"
+    }
+  ],
+  "runSpec": {
+    "interpreter": "python3",
+    "file": "src/launch.py",
+    "distribution": "Ubuntu",
+    "release": "24.04",
+    "version": "0",
+    "assetDepends": [
+      {
+        "id": "record-Insert-your-custom-build-assetID-here" 
+      }
+    ],
+    "systemRequirements": {
+      "main": {
+        "instanceType": "mem2_hdd2_x1"
+      }
+    }
+  },
+  "access": {
+    "project": "CONTRIBUTE",
+    "network": [
+      "*"
+    ]
+  },
+  "timeoutPolicy": {
+    "*": {
+      "hours": 48
+    }
+  }
+}
