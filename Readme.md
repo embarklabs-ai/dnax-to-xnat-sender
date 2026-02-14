@@ -2,6 +2,23 @@
 
 DNAnexus applet that exports DICOM zip archives and non-DICOM, clinical files (SVS, CSV, PDF, JSON) from DNAnexus to XNAT.
 
+## Repo Structure
+
+```
+dnax-to-xnat-sender/
+├── dxapp.json                          # DNAnexus applet definition (inputs, outputs, runtime)
+├── src/
+│   └── launch.py                       # DNAnexus entry point (loads Docker, runs container)
+├── docker/
+│   ├── Dockerfile                      # Python 3.11 image with dependencies
+│   └── app/
+│       └── main.py                     # Core logic (DICOM import, resource upload, reporting)
+└── docker-image-asset/
+    ├── dxasset.json                    # DNAnexus asset metadata
+    └── resources/opt/dnax2xnat/
+        └── dnax2xnat-1.0.tar           # Pre-built Docker image (loaded at runtime)
+```
+
 ## How It Works
 
 1. Resolves manifest file entries (filenames or file IDs) on DNAnexus
