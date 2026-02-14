@@ -37,7 +37,7 @@ dnax-to-xnat-sender/
 | `xnat_project` | string | No | Override XNAT project from manifest |
 | `report_filename` | string | No | Output CSV name (default: `export_report.csv`, always UTC-timestamped) |
 
-## Example of Manifest Format shown using a sample subject from the open source CMB-BRCA dataset
+## Example of Manifest shown using a sample subject from the open source CMB-BRCA dataset
 
 ```yaml
 images:
