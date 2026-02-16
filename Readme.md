@@ -58,7 +58,7 @@ Filenames are resolved by looking them up in `{src_root_path}/{project}/{subject
 
 | Pattern | Type | XNAT Destination |
 |---------|------|------------------|
-| `*.zip` | DICOM | Prearchive -> auto-archive |
+| `*.zip`(explicit checks IF DICOM or not) | DICOM | Prearchive -> auto-archive |
 | `*-SVS.zip` or `*.svs` | SVS resource | Session resource folder `SVS/` |
 | `*-CSV.zip` or `*.csv` | CSV resource | Session resource folder `CSV/` |
 | `*-JSON.zip` or `*.json` | JSON resource | Session resource folder `JSON/` |
