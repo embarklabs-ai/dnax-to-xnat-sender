@@ -24,7 +24,7 @@ dnax-to-xnat-sender/
 1. Resolves manifest file entries (filenames or file IDs) on DNAnexus
 2. Splits files into DICOM zips and non-DICOM resources by extension/suffix
 3. **DICOM**: Validates metadata, streams to XNAT, confirms files are archived.
-4. **Resources**: Finds existing XNAT session and uploads to type-specific resource folders (SVS/, CSV/, JSON/, PDF/). SVS files can create a new Slide Microscopy session if matching session exists.
+4. **Resources**: Finds existing XNAT session and uploads to type-specific resource folders (SVS/, CSV/, JSON/, PDF/). SVS files can create a new Slide Microscopy session if matching session does not exist.
 5. Outputs a timestamped CSV report with detailed logging.
 
 ## Inputs
