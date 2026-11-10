@@ -85,7 +85,7 @@ The Docker image can be built as follows. Note : the docker image must be rebuil
 Perform these steps when logged into the DNAnexus platform (dx login)
 
 ```bash
-docker buildx build -t dnax2xnat:1.0 --load docker/
+docker buildx build --platform linux/amd64 -t dnax2xnat:1.0 --load docker/
 docker save dnax2xnat:1.0 -o docker-image-asset/resources/opt/dnax2xnat/dnax2xnat-1.0.tar
 dx build_asset docker-image-asset --destination <project>:/ --brief
 # Update dxapp.json assetDepends with new asset record ID
