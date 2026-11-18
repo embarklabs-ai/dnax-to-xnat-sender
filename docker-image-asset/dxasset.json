@@ -1,7 +1,7 @@
 {
   "name": "dnax2xnat-docker-image",
   "title": "Docker image for DNAx→XNAT exporter",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Prebaked Python env and exporter code; loaded via docker load by the applet.",
   "distribution": "Ubuntu",
   "release": "24.04"
