@@ -102,7 +102,7 @@ Perform these steps when logged into the DNAnexus platform (dx login)
 ```bash
 docker buildx build --platform linux/amd64 -t dnax2xnat:1.1 --load docker/
 docker save dnax2xnat:1.1 -o docker-image-asset/resources/opt/dnax2xnat/dnax2xnat-1.1.tar
-dx build_asset docker-image-asset --destination <project>:/ --brief
+dx build_asset docker-image-asset --destination <project>:/ 
 # Update dxapp.json assetDepends with new asset record ID
 dx build . --destination <project>:/
 ```
