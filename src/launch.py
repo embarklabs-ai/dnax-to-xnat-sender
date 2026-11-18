@@ -10,8 +10,8 @@ import subprocess
 from datetime import datetime, timezone
 import dxpy
 
-DOCKER_TAR_PATH = "/opt/dnax2xnat/dnax2xnat-1.0.tar"
-IMAGE_TAG = "dnax2xnat:1.0"
+DOCKER_TAR_PATH = "/opt/dnax2xnat/dnax2xnat-1.1.tar"
+IMAGE_TAG = "dnax2xnat:1.1"
 DEFAULT_REPORT = "export_report.csv"
 
 def utc_stamp() -> str:

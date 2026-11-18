@@ -1,4 +1,4 @@
-# ADAPT XNAT Sender v1.0
+# ADAPT XNAT Sender v1.1
 
 DNAnexus applet that exports DICOM zip archives and non-DICOM, clinical files (SVS, CSV, PDF, JSON) from DNAnexus to XNAT.
 
@@ -16,7 +16,7 @@ dnax-to-xnat-sender/
 └── docker-image-asset/
     ├── dxasset.json                    # DNAnexus asset metadata
     └── resources/opt/dnax2xnat/
-        └── dnax2xnat-1.0.tar           # Pre-built Docker image (loaded at runtime)
+        └── dnax2xnat-1.1.tar           # Pre-built Docker image (loaded at runtime)
 ```
 
 ## How It Works
@@ -24,8 +24,21 @@ dnax-to-xnat-sender/
 1. Resolves manifest file entries (filenames or file IDs) on DNAnexus
 2. Splits files into DICOM zips and non-DICOM resources by extension/suffix
 3. **DICOM**: Validates metadata, streams to XNAT, confirms files are archived.
-4. **Resources**: Finds existing XNAT session and uploads to type-specific resource folders (SVS/, CSV/, JSON/, PDF/). SVS files can create a new Slide Microscopy session if matching session does not exist.
+4. **Resources**: Finds existing XNAT session and uploads to type-specific resource folders (WSI/, CSV/, JSON/, PDF/). SVS files can create a new Slide Microscopy session if matching session does not exist.
 5. Outputs a timestamped CSV report with detailed logging.
+
+### Resource upload rules
+
+- **Project check**: every target XNAT project is checked before anything is sent (IDs are case-sensitive). Files for a project that does not exist are reported as not sent.
+- **Verified**: every upload is checked against XNAT by size, and by MD5 when XNAT stores checksums (XNAT site setting).
+- **Additive, never overwritten**: if a file with the same name is already in the session resource:
+  - identical (same size and MD5) -> not re-sent, reported as already on XNAT
+  - same size, but XNAT stores no checksum to compare -> not re-sent, reported as not sent (rename a corrected file to send it)
+  - different -> stored next to it as a new version with a UTC timestamp, e.g. `report_20261118T153045Z.pdf`
+- **Subject check**: files are only attached to an existing session if XNAT holds that session under the same subject as the manifest. Otherwise they are not sent and the report gives both subjects.
+- **Safe retries**: after a timeout or 5xx error the applet first checks whether XNAT saved the file anyway, then retries (up to 3 attempts). DICOM-zip imports are sent exactly once, since repeating an import is not safe.
+- **Names**: labels and file names are URL-encoded; file names containing `\ / ? # % + ; : * " < > |` are refused with a message.
+- **Permission errors**: if XNAT refuses a write (HTTP 403), the run stops sending and the remaining files are reported as not sent.
 
 ## Inputs
 
@@ -46,7 +59,7 @@ images:
       MSB-06586-MR-19591112:         # Session label
         - 201.zip                    # DICOM zip , DNAnexus file IDs are extracted from metadata
         - 301.zip                    # DICOM zip , DNAnexus file IDs are extracted from metadata
-        - MSB-06586-EX001-SVS.zip    # Non-DICOM -> SVS XNAT session resource folder , DNAnexus file IDs are extracted from metadata
+        - MSB-06586-EX001-SVS.zip    # Non-DICOM -> WSI XNAT session resource folder , DNAnexus file IDs are extracted from metadata
         - clinical_report.pdf        # Non-DICOM -> PDF XNAT session resource folder , DNAnexus file IDs are extracted from metadata
         - lab_results.csv            # Non-DICOM -> CSV XNAT session resource folder , DNAnexus file IDs are extracted from metadata
         - file-XXXXXXXXXXXXXXXXXXXX  # OR DNAnexus file IDs (used directly). 
@@ -59,7 +72,7 @@ Filenames are resolved by looking them up in `{src_root_path}/{project}/{subject
 | Pattern | Type | XNAT Destination |
 |---------|------|------------------|
 | `*.zip`(explicit checks IF DICOM or not) | DICOM | Prearchive -> auto-archive |
-| `*-SVS.zip` or `*.svs` | SVS resource | Session resource folder `SVS/` |
+| `*-SVS.zip` or `*.svs` | SVS resource | Session resource folder `WSI/` |
 | `*-CSV.zip` or `*.csv` | CSV resource | Session resource folder `CSV/` |
 | `*-JSON.zip` or `*.json` | JSON resource | Session resource folder `JSON/` |
 | `*-PDF.zip` or `*.pdf` | PDF resource | Session resource folder `PDF/` |
@@ -68,7 +81,9 @@ DICOM files must be **zip archives**.
 
 ## Output
 
-A CSV report with columns: `project, subject, session_label, file_name, file_id, sent_to_xnat, xnat_experiment_id, message`
+A CSV report with columns: `project, subject, session_label, file_name, file_id, sent_to_xnat, xnat_experiment_id, message, xnat_resource, xnat_file_name, md5`
+
+`xnat_file_name` is the name stored on XNAT (differs from `file_name` when a new timestamped version was stored); `md5` is the MD5 of the DNAnexus file.
 
 ## Running
 
@@ -85,8 +100,8 @@ The Docker image can be built as follows. Note : the docker image must be rebuil
 Perform these steps when logged into the DNAnexus platform (dx login)
 
 ```bash
-docker buildx build --platform linux/amd64 -t dnax2xnat:1.0 --load docker/
-docker save dnax2xnat:1.0 -o docker-image-asset/resources/opt/dnax2xnat/dnax2xnat-1.0.tar
+docker buildx build --platform linux/amd64 -t dnax2xnat:1.1 --load docker/
+docker save dnax2xnat:1.1 -o docker-image-asset/resources/opt/dnax2xnat/dnax2xnat-1.1.tar
 dx build_asset docker-image-asset --destination <project>:/ --brief
 # Update dxapp.json assetDepends with new asset record ID
 dx build . --destination <project>:/
